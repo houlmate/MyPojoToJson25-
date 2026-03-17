@@ -1,7 +1,6 @@
 package com.clu.idea.utils;
 
 import com.clu.idea.MyPluginException;
-import com.google.common.io.LineReader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -11,7 +10,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.PsiClassType.ClassResolveResult;
-import com.intellij.psi.impl.compiled.ClsClassImpl;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -21,6 +19,7 @@ import com.intellij.util.Processor;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -457,10 +456,10 @@ public class MyPojoToJsonCore {
         }
 
         // add support for Android Application
-        if (psiClass instanceof ClsClassImpl) {
-            PsiClass sourceMirrorClass = ((ClsClassImpl) psiClass).getSourceMirrorClass();
-            if (sourceMirrorClass != null) {
-                psiClass = sourceMirrorClass;
+        if (psiClass instanceof PsiCompiledElement) {
+            PsiElement mirror = ((PsiCompiledElement) psiClass).getMirror();
+            if (mirror instanceof PsiClass) {
+                psiClass = (PsiClass) mirror;
             }
         }
 
@@ -576,7 +575,7 @@ public class MyPojoToJsonCore {
     private static String formatJavadoc(@NotNull String javadoc) {
         javadoc = javadoc.substring("/**".length());
         javadoc = javadoc.substring(0, javadoc.length() - "*/".length());
-        LineReader lineReader = new LineReader(new StringReader(javadoc));
+        BufferedReader lineReader = new BufferedReader(new StringReader(javadoc));
         StringBuilder builder = new StringBuilder();
         String line;
         try {
@@ -595,7 +594,7 @@ public class MyPojoToJsonCore {
 
     static String myFormat(String json) throws IOException {
         StringBuilder builder = new StringBuilder();
-        LineReader lineReader = new LineReader(new StringReader(json));
+        BufferedReader lineReader = new BufferedReader(new StringReader(json));
         String line = lineReader.readLine();
         do {
             String trimLine = line.trim();

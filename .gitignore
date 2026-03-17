@@ -1,0 +1,9 @@
+.gradle/
+build/
+out/
+.idea/
+*.iml
+.intellijPlatform/
+.gradle-dist/
+.jdks/
+.playwright-cli/
