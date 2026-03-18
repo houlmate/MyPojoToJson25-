@@ -201,6 +201,39 @@ public class MyPojoToJsonCore {
         }
     }
 
+    private static PsiType unwrapCollectionElementType(PsiType psiType) {
+        if (psiType instanceof PsiWildcardType) {
+            PsiType extendsBound = ((PsiWildcardType) psiType).getExtendsBound();
+            if (extendsBound != null) {
+                return extendsBound;
+            }
+            PsiType superBound = ((PsiWildcardType) psiType).getSuperBound();
+            if (superBound != null) {
+                return superBound;
+            }
+            return null;
+        }
+        return psiType;
+    }
+
+    private static PsiType extractIterableElementType(@NotNull PsiType psiType) {
+        PsiType deepType = unwrapCollectionElementType(PsiUtil.extractIterableTypeParameter(psiType, false));
+        if (deepType != null) {
+            return deepType;
+        }
+
+        if (psiType instanceof PsiClassType) {
+            ClassResolveResult classResolveResult = ((PsiClassType) psiType).resolveGenerics();
+            for (PsiType candidate : classResolveResult.getSubstitutor().getSubstitutionMap().values()) {
+                PsiType unwrapped = unwrapCollectionElementType(candidate);
+                if (unwrapped != null) {
+                    return unwrapped;
+                }
+            }
+        }
+        return null;
+    }
+
     static Object resolveType(@NotNull PsiType psiType, @NotNull ProcessingInfo processingInfo) {
         String className = getClassName(psiType);
         // 要放在try/finally外面
@@ -259,9 +292,11 @@ public class MyPojoToJsonCore {
                         List<Object> list = new ArrayList<>();
                         // 复杂类型支持返回非完整的转换
                         processingInfo.setResultIfAbsent(list);
-                        PsiType deepType = PsiUtil.extractIterableTypeParameter(psiType, false);
+                        PsiType deepType = extractIterableElementType(psiType);
                         if (deepType != null) {
                             list.add(resolveType(deepType, processingInfo)); // iterableType
+                        } else {
+                            list.add("(rawType)");
                         }
                         return list;
                     }

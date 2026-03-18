@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.clu.idea.utils.MyPojoToJson</id>
     <name>My Pojo To Json</name>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <vendor email="luchuanbaker@qq.com" url="https://github.com/luchuanbaker">luchuanbaker</vendor>
 
     <depends>com.intellij.modules.platform</depends>
@@ -27,7 +27,7 @@
         <li>1.0.0 - First revision.</li>
     ]]></change-notes>
 
-    <idea-version since-build="251"/>
+    <idea-version since-build="223"/>
 
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup

@@ -2,16 +2,18 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
     id("java")
-    id("org.jetbrains.intellij.platform") version "2.13.1"
+    id("org.jetbrains.intellij.platform") version "2.11.0"
 }
 
 group = "com.clu.idea"
-version = "1.1.0"
+version = "1.1.1"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(17)
     }
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 sourceSets {
@@ -36,7 +38,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.1")
 
     intellijPlatform {
-        intellijIdea("2025.1.4")
+        intellijIdea("2022.3.3")
         bundledPlugin("com.intellij.java")
         testFramework(TestFrameworkType.Platform)
     }
@@ -48,13 +50,7 @@ intellijPlatform {
         version = project.version.toString()
 
         ideaVersion {
-            sinceBuild = "251"
-        }
-    }
-
-    pluginVerification {
-        ides {
-            recommended()
+            sinceBuild = "223"
         }
     }
 }
@@ -65,6 +61,6 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "9.3.1"
+        gradleVersion = "8.14.3"
     }
 }
